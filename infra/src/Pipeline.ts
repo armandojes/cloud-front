@@ -7,6 +7,8 @@ import { Construct } from 'constructs';
 import addSuffix from './helpers/addSuffix';
 import EnvironmentName from './contracts/EnvironmentName';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
+import getConfigFileName from './helpers/getConfigFileName';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 interface PipelineProps extends cdk.StackProps {
   environmentName: EnvironmentName;
@@ -26,8 +28,15 @@ class Pipeline extends cdk.Stack {
       pipelineName: addSuffix('ArmandFrontPipeline', props.environmentName),
       artifactBucket: artifactsBucket,
       synth: new pipelines.CodeBuildStep('CompileInfraAndCode', {
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: ['kms:Decrypt', 'ssm:GetParameter'],
+            resources: ['*'],
+          }),
+        ],
         input: pipelines.CodePipelineSource.gitHub('armandojes/cloud-front', props.environmentName),
         commands: [
+          `aws ssm get-parameter --name ${getConfigFileName(props.environmentName)} --with-decryption --query 'Parameter.Value' --output text > src/config.js`,
           'npm ci',
           'npm run build',
           'cd infra',
