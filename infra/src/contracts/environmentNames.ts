@@ -1,0 +1,1 @@
+type EnvironmentNames = 'develop' | 'quality' | 'master';

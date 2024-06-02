@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { InfraStack } from './Stack';
+import Stack from './Stack';
 
 const app = new cdk.App();
-new InfraStack(app, 'InfraStack', {});
+new Stack(app, 'arman-front-stack', {});
