@@ -4,4 +4,11 @@ import * as cdk from 'aws-cdk-lib';
 import Stack from './Stack';
 
 const app = new cdk.App();
-new Stack(app, 'arman-front-stack', {});
+
+new Stack(app, 'ArmanDevFrontStack', {
+  environmentName: 'develop'
+});
+
+new Stack(app, 'ArmanQaFrontStack', {
+  environmentName: 'quality'
+});
