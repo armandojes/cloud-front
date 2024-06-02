@@ -19,7 +19,7 @@ class Pipeline extends cdk.Stack {
     super(scope, id, props);
 
     const artifactsBucket = new Bucket(this, 'armando-artifacts-front', {
-      bucketName: 'armando-artifacts-front',
+      bucketName: addSuffix('armando-artifacts-front', props.environmentName),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     })
