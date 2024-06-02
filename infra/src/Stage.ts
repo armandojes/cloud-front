@@ -12,7 +12,7 @@ class Stage extends cdk.Stage {
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id, props);
 
-    new Stack(this, 'ArmanDevFrontStack', {
+    new Stack(this, `armandoFrontStack-${props.environmentName}`, {
       environmentName: props.environmentName
     });
   }
