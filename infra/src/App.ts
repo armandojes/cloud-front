@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import Stack from './Stack';
+import Pipeline from './Pipeline';
 
 const app = new cdk.App();
 
-new Stack(app, 'ArmanDevFrontStack', {
+new Pipeline(app, 'ArmanFrontPipeline', {
   environmentName: 'develop'
 });
 
-new Stack(app, 'ArmanQaFrontStack', {
+new Pipeline(app, 'ArmanFrontPipeline', {
   environmentName: 'quality'
+});
+
+new Pipeline(app, 'ArmanFrontPipeline', {
+  environmentName: 'master'
 });
