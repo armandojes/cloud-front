@@ -34,7 +34,7 @@ class Pipeline extends cdk.Stack {
           }),
         ],
         buildEnvironment: {
-          buildImage: LinuxBuildImage.STANDARD_7_0,
+          buildImage: LinuxBuildImage.STANDARD_5_0,
           environmentVariables: {
             'NODE_VERSION': {
               value: '14',
