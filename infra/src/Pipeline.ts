@@ -35,6 +35,11 @@ class Pipeline extends cdk.Stack {
         ],
         buildEnvironment: {
           buildImage: LinuxBuildImage.STANDARD_7_0,
+          environmentVariables: {
+            'NODE_VERSION': {
+              value: '14',
+            },
+          },
         },
         input: pipelines.CodePipelineSource.gitHub('armandojes/cloud-front', props.environmentName),
         commands: [
