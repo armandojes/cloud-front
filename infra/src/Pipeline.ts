@@ -43,6 +43,7 @@ class Pipeline extends cdk.Stack {
         },
         input: pipelines.CodePipelineSource.gitHub('armandojes/cloud-front', props.environmentName),
         commands: [
+          'echo "Installing Node.js... standard 7.0"',
           'node -v',
           `aws ssm get-parameter --name ${getConfigFileName(props.environmentName)} --with-decryption --query 'Parameter.Value' --output text > src/config.js`,
           'npm ci',
