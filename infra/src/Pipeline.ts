@@ -23,38 +23,35 @@ class Pipeline extends cdk.Stack {
       autoDeleteObjects: true,
     })
 
+    const readParameterPolicy = new PolicyStatement({
+      actions: ['kms:Decrypt', 'ssm:GetParameter'],
+      resources: ['*'],
+    })
+
+    const synthStep = new pipelines.CodeBuildStep('CompileInfraAndCode', {
+      input: pipelines.CodePipelineSource.gitHub('armandojes/cloud-front', props.environmentName),
+      primaryOutputDirectory: 'infra/cdk.out',
+      rolePolicyStatements: [readParameterPolicy],
+      buildEnvironment: {
+        buildImage: LinuxBuildImage.STANDARD_7_0,
+      },
+      commands: [
+        'echo "Installing Node.js... standard 7.0"',
+        'node -v',
+        `aws ssm get-parameter --name ${getConfigFileName(props.environmentName)} --with-decryption --query 'Parameter.Value' --output text > src/config.js`,
+        'npm ci',
+        'npm run build',
+        'cd infra',
+        'npm ci',
+        'npm run build',
+        'npx cdk synth',
+      ],
+    })
+
     const pipeline = new pipelines.CodePipeline(this, 'ArmandFrontPipeline', {
       pipelineName: addSuffix('ArmandFrontPipeline', props.environmentName),
       artifactBucket: artifactsBucket,
-      synth: new pipelines.CodeBuildStep('CompileInfraAndCode', {
-        rolePolicyStatements: [
-          new PolicyStatement({
-            actions: ['kms:Decrypt', 'ssm:GetParameter'],
-            resources: ['*'],
-          }),
-        ],
-        buildEnvironment: {
-          buildImage: LinuxBuildImage.STANDARD_7_0,
-          environmentVariables: {
-            'NODE_VERSION': {
-              value: '14',
-            },
-          },
-        },
-        input: pipelines.CodePipelineSource.gitHub('armandojes/cloud-front', props.environmentName),
-        commands: [
-          'echo "Installing Node.js... standard 7.0"',
-          'node -v',
-          `aws ssm get-parameter --name ${getConfigFileName(props.environmentName)} --with-decryption --query 'Parameter.Value' --output text > src/config.js`,
-          'npm ci',
-          'npm run build',
-          'cd infra',
-          'npm ci',
-          'npm run build',
-          'npx cdk synth',
-        ],
-        primaryOutputDirectory: 'infra/cdk.out',
-      })
+      synth: synthStep,
     })
 
 
