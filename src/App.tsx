@@ -3,9 +3,16 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import environment from './config'
+import ConfirmableButton from './components/ConfirmableAction'
+import { Button } from '@mui/material'
 
 function App() {
   const [count, setCount] = useState(0)
+
+  const handleIncrement = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setCount((prev) => prev + 1)
+  }
 
   return (
     <>
@@ -19,9 +26,19 @@ function App() {
       </div>
       <h1>AWS - CloudFront + Pipeline + {environment}</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+        {count}
+        <br />
+        <ConfirmableButton
+          modalCancelText='Cancelar incremento'
+          modalConfirmText='Confirmar incremento'
+          modalContent='Desea incrementar o contador?'
+          modalTitle='Incrementar contador'
+          waitActionCompletion={true}
+          onConfirm={handleIncrement}
+          RenderChild={(props) => (
+            <Button onClick={props.triggerModal}>hello custom button</Button>
+          )}
+        />
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
